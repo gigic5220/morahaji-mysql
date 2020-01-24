@@ -29,7 +29,7 @@ public class BoardDAO {
       try {
          Context initContext = new InitialContext();
          Context envContext = (Context) initContext.lookup("java:/comp/env");
-         ds = (DataSource) envContext.lookup("jdbc/OracleDB");
+         ds = (DataSource) envContext.lookup("jdbc_mariadb");
       } catch (NamingException e) {
          e.printStackTrace();
       }
@@ -77,7 +77,7 @@ public class BoardDAO {
          conn = ds.getConnection();
          String sql = "INSERT INTO BOARD "
                + "(BOARD_KEY, USER_KEY, BOARD_TITLE, BOARD_CONTENT, BOARD_GIF, BOARD_DATE) "
-               + "VALUES((SELECT NVL(MAX(BOARD_KEY),0)+1 FROM BOARD),?,?,?,?,SYSDATE)";
+               + "VALUES((SELECT ifnull(MAX(BOARD_KEY),0)+1 FROM BOARD),?,?,?,?,now())";
          pstmt = conn.prepareStatement(sql);
          pstmt.setInt(1, user_key);
          pstmt.setString(2, boarddata.getBOARD_TITLE());
@@ -187,7 +187,7 @@ public class BoardDAO {
       List<BoardBean> boardbean = new ArrayList<BoardBean>();
       try {
          conn = ds.getConnection();
-         String sql = "SELECT A.*, RNUM FROM (SELECT  ROWNUM RNUM, BOARD_KEY, USER_KEY, BOARD_TITLE, TO_CHAR(BOARD_DATE,'YYYY-MM-DD HH24:Mi:SS') BOARD_DATE, BOARD_READCOUNT, NVL(COMMENTCOUNT,0) REPLYCOUNT, NVL(LIKECOUNT,0) LIKECOUNT FROM (SELECT * FROM (SELECT * FROM BOARD LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT FROM COUNT GROUP BY BOARD_KEY) C USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT FROM REPLY GROUP BY BOARD_KEY) C USING (BOARD_KEY)) ORDER BY BOARD_DATE DESC)) A WHERE RNUM>=? AND RNUM<=?";
+         String sql = "SELECT A.*, RNUM FROM (SELECT @rownum:=@rownum+1  as RNUM , BOARD_KEY, USER_KEY, BOARD_TITLE, DATE_FORMAT(BOARD_DATE,'YYYY-MM-DD HH24:Mi:SS') BOARD_DATE, BOARD_READCOUNT, ifnull(COMMENTCOUNT,0) REPLYCOUNT, ifnull(LIKECOUNT,0) LIKECOUNT FROM (SELECT * FROM (SELECT @rownum := 0) r, (SELECT * FROM BOARD JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT FROM COUNT GROUP BY BOARD_KEY) C USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT FROM REPLY GROUP BY BOARD_KEY) d USING (BOARD_KEY)) y ORDER BY BOARD_DATE DESC) x) A WHERE RNUM>=? AND RNUM<=?";
          int startrow = (page - 1) * limit + 1;
          int endrow = startrow + limit - 1;
          System.out.println("startrow =  " + startrow + "endrow = " + endrow);
@@ -249,7 +249,7 @@ public class BoardDAO {
       List<BoardBean> boardbean = new ArrayList<BoardBean>();
       try {
          conn = ds.getConnection();
-         String sql = "SELECT A.*, RNUM FROM (SELECT ROWNUM RNUM, BOARD_KEY, USER_KEY, BOARD_TITLE, TO_CHAR(BOARD_DATE,'YYYY-MM-DD HH24:Mi:SS') BOARD_DATE, BOARD_READCOUNT, NVL(COMMENTCOUNT,0) REPLYCOUNT, NVL(LIKECOUNT,0) LIKECOUNT FROM (SELECT * FROM (SELECT * FROM BOARD LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT FROM COUNT GROUP BY BOARD_KEY) C USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT FROM REPLY GROUP BY BOARD_KEY) C USING (BOARD_KEY)) ORDER BY BOARD_DATE DESC)) A WHERE RNUM>=? AND RNUM<=? AND USER_KEY=?";
+         String sql = "SELECT A.*, RNUM FROM (SELECT @rownum:=@rownum+1  as RNUM , BOARD_KEY, USER_KEY, BOARD_TITLE, DATE_FORMAT(BOARD_DATE,'YYYY-MM-DD HH24:Mi:SS') BOARD_DATE, BOARD_READCOUNT, ifnull(COMMENTCOUNT,0) REPLYCOUNT, ifnull(LIKECOUNT,0) LIKECOUNT FROM (SELECT @rownum := 0) r, (SELECT * FROM (SELECT * FROM BOARD LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT FROM COUNT GROUP BY BOARD_KEY) C USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT FROM REPLY GROUP BY BOARD_KEY) C USING (BOARD_KEY)) ORDER BY BOARD_DATE DESC)) A WHERE RNUM>=? AND RNUM<=? AND USER_KEY=?";
          int startrow = (page - 1) * limit + 1;
          int endrow = startrow + limit - 1;
          pstmt = conn.prepareStatement(sql);
@@ -399,11 +399,11 @@ public class BoardDAO {
          String sql = "";
          // 제목+내용으로 검색할 때 쿼리
          if (field.equals("title+content")) {
-            sql = "SELECT A.*, RNUM FROM (SELECT  ROWNUM RNUM, BOARD_KEY, USER_KEY, BOARD_TITLE, TO_CHAR(BOARD_DATE,'YYYY-MM-DD HH24:Mi:SS') BOARD_DATE, BOARD_READCOUNT, NVL(COMMENTCOUNT,0) REPLYCOUNT, NVL(LIKECOUNT,0) LIKECOUNT, BOARD_CONTENT FROM (SELECT * FROM (SELECT * FROM BOARD LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT FROM COUNT GROUP BY BOARD_KEY) C USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT FROM REPLY GROUP BY BOARD_KEY) C USING (BOARD_KEY)) WHERE BOARD_TITLE LIKE ? OR BOARD_CONTENT LIKE ? ORDER BY BOARD_DATE DESC)) A WHERE RNUM>=? AND RNUM<=?";
+            sql = "SELECT A.*, RNUM FROM (SELECT  @rownum:=@rownum+1  as RNUM , BOARD_KEY, USER_KEY, BOARD_TITLE, DATE_FORMAT(BOARD_DATE,'YYYY-MM-DD HH24:Mi:SS') BOARD_DATE, BOARD_READCOUNT, ifnull(COMMENTCOUNT,0) REPLYCOUNT, ifnull(LIKECOUNT,0) LIKECOUNT, BOARD_CONTENT FROM (SELECT @rownum := 0) r, (SELECT * FROM (SELECT * FROM BOARD LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT FROM COUNT GROUP BY BOARD_KEY) C USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT FROM REPLY GROUP BY BOARD_KEY) C USING (BOARD_KEY)) WHERE BOARD_TITLE LIKE ? OR BOARD_CONTENT LIKE ? ORDER BY BOARD_DATE DESC)) A WHERE RNUM>=? AND RNUM<=?";
          } else if (field.equals("user_name")) {
-            sql = "SELECT A.*, RNUM FROM (SELECT  ROWNUM RNUM, BOARD_KEY, USER_KEY, BOARD_TITLE, TO_CHAR(BOARD_DATE,'YYYY-MM-DD HH24:Mi:SS') BOARD_DATE, BOARD_READCOUNT, NVL(COMMENTCOUNT,0) REPLYCOUNT, NVL(LIKECOUNT,0) LIKECOUNT, BOARD_CONTENT FROM (SELECT * FROM (SELECT * FROM BOARD LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT FROM COUNT GROUP BY BOARD_KEY) USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT FROM REPLY GROUP BY BOARD_KEY) USING (BOARD_KEY) LEFT JOIN (SELECT USER_KEY , USER_NAME FROM USERS) USING (USER_KEY)) WHERE USER_NAME like ? ORDER BY BOARD_DATE DESC)) A WHERE RNUM>=? AND RNUM<=?";
+            sql = "SELECT A.*, RNUM FROM (SELECT  @rownum:=@rownum+1  as RNUM , BOARD_KEY, USER_KEY, BOARD_TITLE, DATE_FORMAT(BOARD_DATE,'YYYY-MM-DD HH24:Mi:SS') BOARD_DATE, BOARD_READCOUNT, ifnull(COMMENTCOUNT,0) REPLYCOUNT, ifnull(LIKECOUNT,0) LIKECOUNT, BOARD_CONTENT FROM (SELECT @rownum := 0) r, (SELECT * FROM (SELECT * FROM BOARD LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT FROM COUNT GROUP BY BOARD_KEY) USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT FROM REPLY GROUP BY BOARD_KEY) USING (BOARD_KEY) LEFT JOIN (SELECT USER_KEY , USER_NAME FROM USERS) USING (USER_KEY)) WHERE USER_NAME like ? ORDER BY BOARD_DATE DESC)) A WHERE RNUM>=? AND RNUM<=?";
          } else {
-            sql = "SELECT A.*, RNUM FROM (SELECT  ROWNUM RNUM, BOARD_KEY, USER_KEY, BOARD_TITLE, TO_CHAR(BOARD_DATE,'YYYY-MM-DD HH24:Mi:SS') BOARD_DATE, BOARD_READCOUNT, NVL(COMMENTCOUNT,0) REPLYCOUNT, NVL(LIKECOUNT,0) LIKECOUNT, BOARD_CONTENT FROM (SELECT * FROM (SELECT * FROM BOARD LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT FROM COUNT GROUP BY BOARD_KEY) C USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT FROM REPLY GROUP BY BOARD_KEY) C USING (BOARD_KEY)) WHERE "
+            sql = "SELECT A.*, RNUM FROM (SELECT  @rownum:=@rownum+1  as RNUM , BOARD_KEY, USER_KEY, BOARD_TITLE, DATE_FORMAT(BOARD_DATE,'YYYY-MM-DD HH24:Mi:SS') BOARD_DATE, BOARD_READCOUNT, ifnull(COMMENTCOUNT,0) REPLYCOUNT, ifnull(LIKECOUNT,0) LIKECOUNT, BOARD_CONTENT FROM (SELECT @rownum := 0) r, (SELECT * FROM (SELECT * FROM BOARD LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT FROM COUNT GROUP BY BOARD_KEY) C USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT FROM REPLY GROUP BY BOARD_KEY) C USING (BOARD_KEY)) WHERE "
                   + field + " like ? ORDER BY BOARD_DATE DESC)) A WHERE RNUM>=? AND RNUM<=?";
          }
          int startrow = (page - 1) * limit + 1;
@@ -582,7 +582,7 @@ public class BoardDAO {
       List<WORD> w = new ArrayList<WORD>();
       try {
          conn = ds.getConnection();
-         String sql = "select * from (select b.*,rownum rnum from (select * from word left inner join (select count(word_key) counts ,word_key from reportcount group by word_key)  using(word_key) order by counts desc) b) where rnum between ? and ?";
+         String sql = "select z.* from (select b.*,@rownum:=@rownum+1  as RNUM  from (SELECT @rownum := 0) r, (select * from word left inner join (select count(word_key) counts ,word_key from reportcount group by word_key)  using(word_key) order by counts desc) b) z where rnum between ? and ?";
          int startrow = (page - 1) * limit + 1;
          // 읽기 시작할 row번호(1 11 21 31...
          int endrow = startrow + limit - 1;
@@ -663,7 +663,7 @@ public class BoardDAO {
       try {
          conn = ds.getConnection();
          pstmt = conn.prepareStatement(
-               "select count(*) from board left inner join (select count(board_key) counts, board_key from reportcount group by board_key) using (board_key)");
+               "select count(*) from board join (select count(board_key) counts, board_key from reportcount group by board_key) x using (board_key)");
          rs = pstmt.executeQuery();
          if (rs.next()) {
             x = rs.getInt(1);
@@ -682,7 +682,7 @@ public class BoardDAO {
 
       try {
          conn = ds.getConnection();
-         String sql = "select * from (select b.*,rownum rnum from (select * from board left inner join (select count(board_key) counts ,board_key from reportcount group by board_key)  using(board_key) order by counts desc) b) where rnum between ? and ?";
+         String sql = "select z.* from (select b.*,@rownum:=@rownum+1  as RNUM  from (SELECT @rownum := 0) r, (select * from board join (select count(board_key) counts ,board_key from reportcount group by board_key) x using(board_key) order by counts desc) b) z where rnum between ? and ?";
          pstmt = conn.prepareStatement(sql);
          int startrow = (page - 1) * limit + 1;
          int endrow = startrow + limit - 1;
@@ -738,9 +738,9 @@ public class BoardDAO {
       try {
          conn = ds.getConnection();
 
-         String sql = "select * from (select b.*,rownum rnum from " + " (select * from board left inner join "
+         String sql = "select z.* from (select b.*,@rownum:=@rownum+1  as RNUM  from " + " (SELECT @rownum := 0) r, (select * from board left inner join "
                + " (select count(board_key) counts ,board_key " + " from reportcount group by board_key) "
-               + " using(board_key) where " + field + " like ? order by counts desc) b) "
+               + " using(board_key) where " + field + " like ? order by counts desc) b) z "
                + " where rnum between ? and ?";
 
          pstmt = conn.prepareStatement(sql);
@@ -851,7 +851,7 @@ public class BoardDAO {
       List<BoardRankingBean> brl = new ArrayList<BoardRankingBean>();
       try {
          conn = ds.getConnection();
-         String sql = "SELECT * FROM (SELECT A.*, ROWNUM RNUM FROM (SELECT BOARD_KEY, USER_KEY, BOARD_TITLE, BOARD_CONTENT, TO_CHAR(BOARD_DATE,'YYYY-MM-DD HH24:Mi:SS') BOARD_DATE, NVL(BOARD_READCOUNT,0) BOARD_READCOUNT, NVL(COMMENTCOUNT,0) REPLYCOUNT, NVL(LIKECOUNT,0) LIKECOUNT FROM (SELECT * FROM (SELECT * FROM BOARD LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT FROM COUNT GROUP BY BOARD_KEY) C USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT FROM REPLY GROUP BY BOARD_KEY) C USING (BOARD_KEY)))ORDER BY LIKECOUNT DESC, BOARD_READCOUNT DESC) A) where rnum >=? and rnum<=?";
+         String sql = "SELECT z.* FROM (SELECT A.*, @rownum:=@rownum+1  as RNUM  FROM (SELECT @rownum := 0) r, (SELECT BOARD_KEY, USER_KEY, BOARD_TITLE, BOARD_CONTENT, DATE_FORMAT(BOARD_DATE,'YYYY-MM-DD HH24:Mi:SS') BOARD_DATE, ifnull(BOARD_READCOUNT,0) BOARD_READCOUNT, ifnull(COMMENTCOUNT,0) REPLYCOUNT, ifnull(LIKECOUNT,0) LIKECOUNT FROM (SELECT * FROM (SELECT * FROM BOARD LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT FROM COUNT GROUP BY BOARD_KEY) C USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT FROM REPLY GROUP BY BOARD_KEY) d USING (BOARD_KEY)) x ) y ORDER BY LIKECOUNT DESC, BOARD_READCOUNT DESC) A) z where rnum >=? and rnum<=?";
          pstmt = conn.prepareStatement(sql);
          pstmt.setInt(1, start);
          pstmt.setInt(2, end);

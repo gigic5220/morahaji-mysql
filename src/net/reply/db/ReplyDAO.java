@@ -27,7 +27,7 @@ public class ReplyDAO {
 		try {
 			Context initContext = new InitialContext();
 			Context envContext = (Context) initContext.lookup("java:/comp/env");
-			ds = (DataSource) envContext.lookup("jdbc/OracleDB");
+			ds = (DataSource) envContext.lookup("jdbc_mariadb");
 		} catch (NamingException e) {
 			e.printStackTrace();
 		}
@@ -128,7 +128,7 @@ public class ReplyDAO {
 		int result = 0;
 		try {
 			conn = ds.getConnection();
-			String sql = "insert into reply values((select nvl(max(reply_key),0)+1 from reply), ?, ?, ?, sysdate, (select nvl(max(reply_key),0)+1 from reply), 0, 0)";
+			String sql = "insert into reply values((select ifnull(max(reply_key),0)+1 from reply), ?, ?, ?, now(), (select nvl(max(reply_key),0)+1 from reply), 0, 0)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, rp.getUSER_KEY());
 			pstmt.setInt(2, rp.getBOARD_KEY());
@@ -191,7 +191,7 @@ public class ReplyDAO {
 			// Áõ°¡½ÃÅµ´Ï´Ù.
 			re_seq = re_seq + 1;
 			re_lev = re_lev + 1;
-			sql = "insert into reply values(?,?,?,?,sysdate,?,?,?)";
+			sql = "insert into reply values(?,?,?,?,now(),?,?,?)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, reply_key);
 			pstmt.setInt(2, rp.getUSER_KEY());
@@ -247,7 +247,7 @@ public class ReplyDAO {
 	public boolean replydelete(int re_ref, int re_seq, int re_lev) {
 		boolean result = false;
 		String sql = "delete reply "
-				+ "where reply_re_ref=? and reply_re_lev>=? and reply_re_seq>=? and reply_re_seq<(nvl((select min(reply_re_seq) "
+				+ "where reply_re_ref=? and reply_re_lev>=? and reply_re_seq>=? and reply_re_seq<(ifnull((select min(reply_re_seq) "
 				+ "from reply "
 				+ "where reply_re_lev=? and reply_re_seq>? and reply_re_ref=?), (select max(reply_re_seq)+1 "
 				+ "from reply " + "where reply_re_ref=?)))";

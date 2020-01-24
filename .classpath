@@ -13,5 +13,6 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Program Files/Java/jre1.8.0_221/lib/ext/mariadb-java-client-2.5.3.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

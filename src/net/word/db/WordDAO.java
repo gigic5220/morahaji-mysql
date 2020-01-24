@@ -28,7 +28,7 @@ public class WordDAO {
 	public WordDAO() {
 		try {
 			Context init = new InitialContext();
-			ds = (DataSource) init.lookup("java:comp/env/jdbc/OracleDB");
+			ds = (DataSource) init.lookup("java:comp/env/jdbc_mariadb");
 		} catch (Exception ex) {
 			System.err.println("WordDAO DB 연결 실패 : " + ex);
 		}
@@ -57,7 +57,7 @@ public class WordDAO {
 		try {
 			con = ds.getConnection();
 
-			pstmt = con.prepareStatement("select nvl(max(WORD_KEY),0) from WORD");
+			pstmt = con.prepareStatement("select ifnull(max(WORD_KEY),0) from WORD");
 			rs = pstmt.executeQuery();
 			if (rs.next())
 				return (rs.getInt(1) + 1);
@@ -76,7 +76,7 @@ public class WordDAO {
 		try {
 			con = ds.getConnection();
 
-			pstmt = con.prepareStatement("INSERT INTO WORD VALUES(?, ?, ?, ?, ?, sysdate, ?)");
+			pstmt = con.prepareStatement("INSERT INTO WORD VALUES(?, ?, ?, ?, ?, now(), ?)");
 			pstmt.setInt(1, wordKey);
 			pstmt.setInt(2, w.getUSER_KEY());
 			pstmt.setString(3, w.getWORD_TITLE());
@@ -204,11 +204,11 @@ public class WordDAO {
 			// 읽을 마지막 row 번호
 
 			if (userKey != 0) { // 로그인 한 사용자가 있는 상태
-				String sql = "SELECT * FROM (select rownum rnum, w.* from (select * from WORDLIST join USERS using(USER_KEY)  order by word_date DESC) w) WHERE rnum>=? and rnum<=?";
+				String sql = "SELECT z.* FROM (select @rownum:=@rownum+1  as RNUM, w.* from (SELECT @rownum := 0) b, (select * from WORDLIST join USERS using(USER_KEY)  order by word_date DESC) w) z WHERE z.rnum>=? and z.rnum<=?  order by word_date desc";
 				if (keyword != null)
-					sql = "SELECT * FROM (select rownum rnum, w.* from (select * from WORDLIST join USERS using(USER_KEY) WHERE (word_title LIKE '%"
+					sql = "SELECT z.* FROM (select @rownum:=@rownum+1  as RNUM, w.* from ( SELECT @rownum := 0 ) b,(select * from WORDLIST join USERS using(USER_KEY) WHERE (word_title LIKE '%"
 							+ keyword + "%' OR word_content LIKE '%" + keyword + "%' OR word_exSentence LIKE '%"
-							+ keyword + "%') order by word_date DESC) w) WHERE rnum>=? and rnum<=?";
+							+ keyword + "%') order by word_date DESC) w) z WHERE rnum>=? and rnum<=?  order by word_date desc";
 				System.out.println("sql : " + sql);
 				pstmt = con.prepareStatement(sql);
 				pstmt.setInt(1, startrow);
@@ -241,11 +241,11 @@ public class WordDAO {
 					wordList.add(w);
 				}
 			} else {
-				String sql = "SELECT * FROM (select rownum rnum, w.* from (select * from WORDLIST join USERS using(USER_KEY) order by word_date DESC) w) WHERE rnum>=? and rnum<=?";
+				String sql = "SELECT z.* FROM (select @rownum:=@rownum+1 as RNUM, w.* from ( SELECT @rownum := 0 ) b, (select * from WORDLIST join USERS using(USER_KEY) order by word_date DESC) w) z WHERE rnum>=? and rnum<=?";
 				if (keyword != null)
-					sql = "SELECT * FROM (select rownum rnum, w.* from (select * from WORDLIST join USERS using(USER_KEY) WHERE (word_title LIKE '%"
+					sql = "SELECT z.* FROM (select @rownum:=@rownum+1  as RNUM, w.* from ( SELECT @rownum := 0 ) b, (select * from WORDLIST join USERS using(USER_KEY) WHERE (word_title LIKE '%"
 							+ keyword + "%' OR word_content LIKE '%" + keyword + "%' OR word_exSentence LIKE '%"
-							+ keyword + "%') order by word_date DESC) w) WHERE rnum>=? and rnum<=?";
+							+ keyword + "%') order by word_date DESC) w) z WHERE rnum>=? and rnum<=?";
 				pstmt = con.prepareStatement(sql);
 				pstmt.setInt(1, startrow);
 				pstmt.setInt(2, endrow);
@@ -308,9 +308,9 @@ public class WordDAO {
 			}
 			wordKeys = wordKeys.substring(0, wordKeys.length() - 1);
 			if (userKey != 0) { // 로그인 한 사용자가 있는 상태
-				String sql = "SELECT * " + "FROM (select rownum rnum, w.* " + "from (select * "
+				String sql = "SELECT z.* " + "FROM (select @rownum:=@rownum+1  as RNUM, w.* " + "from (SELECT @rownum := 0 ) b, (select * "
 						+ "from WORDLIST join USERS using(USER_KEY) WHERE word_key IN (" + wordKeys
-						+ ") order by word_date DESC) w) " + "WHERE rnum>=? and rnum<=?";
+						+ ") order by word_date DESC) w) z " + "WHERE rnum>=? and rnum<=?";
 				System.out.println(sql);
 				pstmt = con.prepareStatement(sql);
 				pstmt.setInt(1, startrow);
@@ -343,9 +343,9 @@ public class WordDAO {
 					wordList.add(w);
 				}
 			} else {
-				String sql = "SELECT * " + "FROM (select rownum rnum, w.* " + "from (select * "
+				String sql = "SELECT z.* " + "FROM (select @rownum:=@rownum+1  as RNUM, w.* " + "from (SELECT @rownum := 0 ) b, (select * "
 						+ "from WORDLIST join USERS using(USER_KEY) WHERE word_key IN (" + wordKeys
-						+ ") order by word_date DESC) w) WHERE rnum>=? and rnum<=?";
+						+ ") order by word_date DESC) w) z WHERE rnum>=? and rnum<=?";
 				pstmt = con.prepareStatement(sql);
 				pstmt.setInt(1, startrow);
 				pstmt.setInt(2, endrow);
@@ -413,9 +413,9 @@ public class WordDAO {
 		HashTagDAO hashtagDAO = new HashTagDAO();
 		try {
 			con = ds.getConnection();
-			String sql = "select * from " + "(select rownum rnum, a.* from "
-					+ "(select w.* from   (select * from WORDLIST order by word_date DESC) w) a  "
-					+ "where word_key in (select word_key from count WHERE count_type = 'bookmark' and USER_KEY= ?)) "
+			String sql = "select z.* from " + "(select (SELECT @rownum := 0 ) b, a.* from "
+					+ "(SELECT @rownum := 0 ) b, (select w.* from (select * from WORDLIST order by word_date DESC) w) a  "
+					+ "where word_key in (select word_key from count WHERE count_type = 'bookmark' and USER_KEY= ?)) z "
 					+ "where rnum>= ? and rnum<=?";
 
 			pstmt = con.prepareStatement(sql);
@@ -484,8 +484,8 @@ public class WordDAO {
 		int endrow = startrow + limit - 1;
 		try {
 			con = ds.getConnection();
-			String sql = "select * from (select rownum rnum, w.* "
-					+ "from   (select * from WORDLIST WHERE USER_KEY=? order by word_date DESC) w) "
+			String sql = "select z.* from (select @rownum:=@rownum+1 as RNUM, w.* "
+					+ "from ( SELECT @rownum := 0 ) c, (select * from WORDLIST WHERE USER_KEY=? order by word_date DESC) w) z "
 					+ "where rnum>=? and rnum<=? ";
 
 			pstmt = con.prepareStatement(sql);
@@ -526,7 +526,7 @@ public class WordDAO {
 		try {
 			con = ds.getConnection();
 			pstmt = con.prepareStatement(
-					"select count(*) from word left inner join (select count(word_key) counts, word_key from reportcount group by word_key) using (word_key)");
+					"select count(*) from word join (select count(word_key) counts, word_key from reportcount group by word_key) c using (word_key)");
 			rs = pstmt.executeQuery();
 			if (rs.next()) {
 				x = rs.getInt(1);
@@ -546,7 +546,7 @@ public class WordDAO {
 
 		try {
 			con = ds.getConnection();
-			String sql = "select * from (select b.*,rownum rnum from (select * from word left inner join (select count(word_key) counts ,word_key from reportcount group by word_key)  using(word_key) order by counts desc) b) where rnum between ? and ?";
+			String sql = "select z.* from (select b.*, @rownum:=@rownum+1 as RNUM from ( SELECT @rownum := 0 ) c, (select * from word join (select count(word_key) counts ,word_key from reportcount group by word_key) x using(word_key) order by counts desc) b) z where rnum >= ? and rnum <= ?";
 			pstmt = con.prepareStatement(sql);
 			int startrow = (page - 1) * limit + 1;
 			int endrow = startrow + limit - 1;
@@ -604,9 +604,9 @@ public class WordDAO {
 		try {
 			con = ds.getConnection();
 
-			String sql = "select * from (select b.*,rownum rnum from " + " (select * from word left inner join "
+			String sql = "select z.* from (select b.*, @rownum:=@rownum+1 as RNUM, from " + " (SELECT @rownum := 0 ) b, (select * from word left inner join "
 					+ " (select count(word_key) counts ,word_key " + " from reportcount group by word_key) "
-					+ " using(word_key) where " + field + " like ? order by counts desc) b) "
+					+ " using(word_key) where " + field + " like ? order by counts desc) b) z "
 					+ " where rnum between ? and ?";
 
 			pstmt = con.prepareStatement(sql);
@@ -829,7 +829,7 @@ public class WordDAO {
 		List<WORD> list = new ArrayList<WORD>();
 		try {
 			con = ds.getConnection();
-			String sql = "SELECT * FROM (SELECT A.*, ROWNUM RNUM FROM ((SELECT * FROM WORDLIST ORDER BY NVL(LIKECOUNT,0) DESC ) A)) where rnum >=? and rnum<=?";
+			String sql = "SELECT z.* FROM (SELECT A.*, @rownum:=@rownum+1 as RNUM FROM ((SELECT * FROM WORDLIST ORDER BY ifnull(LIKECOUNT,0) DESC ) A), ( SELECT @rownum := 0 ) c) z where RNUM >=? and RNUM<=?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, start);
 			pstmt.setInt(2, end);

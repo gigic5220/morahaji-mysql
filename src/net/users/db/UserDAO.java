@@ -24,7 +24,7 @@ public class UserDAO {
 	public UserDAO() {
 		try {
 			Context init = new InitialContext();
-			ds = (DataSource) init.lookup("java:comp/env/jdbc/OracleDB");
+			ds = (DataSource) init.lookup("java:comp/env/jdbc_mariadb");
 		} catch (Exception ex) {
 			System.err.println("UserDAO DB 연결 실패 : " + ex);
 		}
@@ -59,7 +59,7 @@ public class UserDAO {
 				con = ds.getConnection();
 
 				pstmt = con.prepareStatement(
-						"INSERT INTO USERS (USER_KEY, USER_ID, USER_NAME, USER_EMAIL, USER_PASSWORD, USER_AGERANGE, USER_STATUS) VALUES((select nvl(max(USER_KEY),0) from USERS)+1, ?, ?, ?, ?, ?, '1')");
+						"INSERT INTO USERS (USER_KEY, USER_ID, USER_NAME, USER_EMAIL, USER_PASSWORD, USER_AGERANGE, USER_STATUS) VALUES((select ifnull(max(USER_KEY),0) from USERS)+1, ?, ?, ?, ?, ?, '1')");
 				pstmt.setString(1, u.getUSER_ID());
 				pstmt.setString(2, u.getUSER_NAME());
 				pstmt.setString(3, u.getUSER_EMAIL());
@@ -84,7 +84,7 @@ public class UserDAO {
 			con = ds.getConnection();
 
 			pstmt = con.prepareStatement(
-					"INSERT INTO lastActivity VALUES((select USER_KEY from USERS where USER_ID = ?), SYSDATE)");
+					"INSERT INTO lastActivity VALUES((select USER_KEY from USERS where USER_ID = ?), now())");
 			pstmt.setString(1, id);
 			result = pstmt.executeUpdate();
 
@@ -281,7 +281,7 @@ public class UserDAO {
 
 			StringBuilder sql = new StringBuilder();
 			sql.append("UPDATE lastActivity ");
-			sql.append("SET LASTACT = SYSDATE ");
+			sql.append("SET LASTACT = now() ");
 			sql.append("WHERE USER_KEY = ? ");
 
 			con = ds.getConnection();
@@ -569,9 +569,11 @@ public class UserDAO {
 
 		try {
 			con = ds.getConnection();
-			String sql = "select *  " + "from (select b.*, rownum rnum " + "		from(select * from users "
-					+ "			where user_id != 'admin' " + "			order by user_id)b " + " )"
-					+ " where rnum>=? and rnum<=? ";
+			String sql = "select z.*  " + "from (select b.*, @rownum:=@rownum+1  as RNUM " 
+			+ "		from (SELECT @rownum := 0) r, (select * from users "
+			+ "			where user_id != 'admin' " 
+			+ "			order by user_id)b " + " ) z "
+			+ " where rnum>=? and rnum<=? ";
 
 			pstmt = con.prepareStatement(sql);
 
@@ -635,9 +637,9 @@ public class UserDAO {
 		try {
 			con = ds.getConnection();
 
-			String sql = "select * " + "from (select b.*, rownum rnum " + "from (select * from users "
+			String sql = "select z.* " + "from (select b.*,@rownum:=@rownum+1  as RNUM " + "from (SELECT @rownum := 0) r, (select * from users "
 					+ "  	where user_id !='admin' " + "			and " + field + " like ? "
-					+ "				order by user_id) b" + "				)" + "		where rnum between ? and ? ";
+					+ "				order by user_id) b" + "				) z " + "		where rnum between ? and ? ";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, "%" + value + "%");
 			int startrow = (page - 1) * limit + 1;
@@ -777,5 +779,5 @@ public class UserDAO {
 		}
 		return false;
 	}
-	
+
 }

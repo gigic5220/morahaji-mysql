@@ -1,12 +1,11 @@
 <Context>
-	<Resource name = "jdbc/OracleDB"
+	<Resource name = "jdbc/joyrapture"
 		auth = "Container"
 		type = "javax.sql.DataSource"
-		username = "ELENA"
-		password = "1234"
-		driverClassName = "oracle.jdbc.driver.OracleDriver"
-		factory = "org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory"
-		url = "jdbc:oracle:thin:@127.0.0.1:1521:xe"
+		username = "joyrapture"
+		password = "Qlalfdb715!"
+		driverClassName = "com.mysql.jdbc.Driver"
+		url = "jdbc:mysql://localhost/joyrapture"
 		maxTotal = "500"
 		maxIdle = "100"/>
 </Context>

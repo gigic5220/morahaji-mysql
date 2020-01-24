@@ -21,7 +21,7 @@ public class HashTagDAO {
 	public HashTagDAO() {
 		try {
 			Context init = new InitialContext();
-			ds = (DataSource) init.lookup("java:comp/env/jdbc/OracleDB");
+			ds = (DataSource) init.lookup("java:comp/env/jdbc_mariadb");
 		} catch (Exception ex) {
 			System.err.println("HashTagDAO DB 연결 실패 : " + ex);
 		}
@@ -96,7 +96,7 @@ public class HashTagDAO {
 		try {
 			con = ds.getConnection();
 
-			pstmt = con.prepareStatement("select nvl(max(HASH_KEY),0) from HASHTAG");
+			pstmt = con.prepareStatement("select ifnull(max(HASH_KEY),0) from HASHTAG");
 			rs = pstmt.executeQuery();
 			if (rs.next())
 				return (rs.getInt(1) + 1);

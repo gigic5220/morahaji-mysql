@@ -41,6 +41,7 @@
                   }
                }, //success end
                error : function(request, status, error) {
+            	   alret(error);
    				location.href = "error/error.jsp";
                }
             }); // end ajax

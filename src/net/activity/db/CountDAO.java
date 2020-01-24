@@ -21,7 +21,7 @@ public class CountDAO {
 	public CountDAO() {
 		try {
 			Context init = new InitialContext();
-			ds = (DataSource) init.lookup("java:comp/env/jdbc/OracleDB");
+			ds = (DataSource) init.lookup("java:comp/env/jdbc_mariadb");
 		} catch (Exception ex) {
 			System.err.println("CountDAO DB 연결 실패 : " + ex);
 		}
@@ -160,9 +160,9 @@ public class CountDAO {
 
 			String sql = "";
 			if (addCountSource.get("postType").equals("word"))
-				sql = "INSERT INTO COUNT VALUES(?, ?, ?, SYSDATE, null, ?)";
+				sql = "INSERT INTO COUNT VALUES(?, ?, ?, now(), null, ?)";
 			if (addCountSource.get("postType").equals("board"))
-				sql = "INSERT INTO COUNT VALUES(?, ?, ?, SYSDATE, ?, null)";
+				sql = "INSERT INTO COUNT VALUES(?, ?, ?, now(), ?, null)";
 			pstmt = con.prepareStatement(sql);
 			if (addCountSource.get("userKey") == null)
 				pstmt.setNull(1, Types.INTEGER);
@@ -217,9 +217,9 @@ public class CountDAO {
 
 			String sql = "";
 			if (addReportSource.get("postType").equals("word"))
-				sql = "INSERT INTO REPORTCOUNT VALUES(?, SYSDATE, ?, null, ?)";
+				sql = "INSERT INTO REPORTCOUNT VALUES(?, now(), ?, null, ?)";
 			if (addReportSource.get("postType").equals("board"))
-				sql = "INSERT INTO REPORTCOUNT VALUES(?, SYSDATE, ?, ?, null)";
+				sql = "INSERT INTO REPORTCOUNT VALUES(?, now(), ?, ?, null)";
 			pstmt = con.prepareStatement(sql);
 
 			pstmt.setInt(1, Integer.parseInt(addReportSource.get("userKey")));
