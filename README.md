@@ -12,7 +12,7 @@
 
 **개발 환경**
 
-    * Eclipse Jee, Oracle Database 11g, Tomcat 8.5
+    * Eclipse Jee, Mariadb 2.8.5, Tomcat 8.5
     
     * JAVA, HTML, JavaScript, jQuery, Bootstrap, Servlet
     
