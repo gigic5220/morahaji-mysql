@@ -24,7 +24,8 @@ public class UserDAO {
 	public UserDAO() {
 		try {
 			Context init = new InitialContext();
-			ds = (DataSource) init.lookup("java:comp/env/jdbc_mariadb");
+			ds = (DataSource) init.lookup("java:comp/env/jdbc/joyrapture");
+//			ds = (DataSource) init.lookup("java:comp/env/jdbc_mariadb");
 		} catch (Exception ex) {
 			System.err.println("UserDAO DB 연결 실패 : " + ex);
 		}
@@ -59,7 +60,7 @@ public class UserDAO {
 				con = ds.getConnection();
 
 				pstmt = con.prepareStatement(
-						"INSERT INTO USERS (USER_KEY, USER_ID, USER_NAME, USER_EMAIL, USER_PASSWORD, USER_AGERANGE, USER_STATUS) VALUES((select ifnull(max(USER_KEY),0) from USERS)+1, ?, ?, ?, ?, ?, '1')");
+						"INSERT INTO USERS (USER_ID, USER_NAME, USER_EMAIL, USER_PASSWORD, USER_AGERANGE, USER_STATUS) VALUES( ?, ?, ?, ?, ?, '1')");
 				pstmt.setString(1, u.getUSER_ID());
 				pstmt.setString(2, u.getUSER_NAME());
 				pstmt.setString(3, u.getUSER_EMAIL());
@@ -307,7 +308,7 @@ public class UserDAO {
 			con = ds.getConnection();
 			String lastAct = "";
 
-			pstmt = con.prepareStatement("SELECT LASTACT FROM LASTACTIVITY WHERE USER_KEY = ? ");
+			pstmt = con.prepareStatement("SELECT LASTACT FROM lastActivity WHERE USER_KEY = ? ");
 			pstmt.setInt(1, userKey);
 
 			rs = pstmt.executeQuery();
@@ -333,7 +334,7 @@ public class UserDAO {
 		try {
 			con = ds.getConnection();
 
-			pstmt = con.prepareStatement("SELECT count(WORD_KEY) FROM WORD WHERE USER_KEY = ? ");
+			pstmt = con.prepareStatement("SELECT count(WORD_KEY) FROM word WHERE USER_KEY = ? ");
 			pstmt.setInt(1, userKey);
 
 			rs = pstmt.executeQuery();
@@ -358,7 +359,7 @@ public class UserDAO {
 		try {
 			con = ds.getConnection();
 
-			pstmt = con.prepareStatement("SELECT USER_PROFILEPHOTO FROM USERS WHERE USER_KEY = ? ");
+			pstmt = con.prepareStatement("SELECT USER_PROFILEPHOTO FROM users WHERE USER_KEY = ? ");
 			pstmt.setInt(1, userKey);
 
 			rs = pstmt.executeQuery();

@@ -25,9 +25,9 @@ public class ReplyDAO {
 
 	public ReplyDAO() {
 		try {
-			Context initContext = new InitialContext();
-			Context envContext = (Context) initContext.lookup("java:/comp/env");
-			ds = (DataSource) envContext.lookup("jdbc_mariadb");
+			Context init = new InitialContext();
+			ds = (DataSource) init.lookup("java:comp/env/jdbc/joyrapture");
+//			ds = (DataSource) init.lookup("java:comp/env/jdbc_mariadb");
 		} catch (NamingException e) {
 			e.printStackTrace();
 		}

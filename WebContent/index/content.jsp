@@ -648,10 +648,22 @@ input:checked+label>i {
 
 </body>
 <script>
+$(document).ready(function(){
+	console.log("page : " + ${page});// 현재 페이지 수
+	console.log("maxpage : " + ${maxpage});// 현재 페이지 수
+
+	console.log("startpage : " + ${startpage});// 현재 페이지에 표시할 첫 페이지 수
+	console.log("endpage : " + ${endpage});// 현재 페이지에 표시할 끝 페이지 수
+
+	console.log("listcount : " + ${listcount});
+	console.log("wordListSize : " + ${wordList.size()});
+	
+})
 	var body = document.body;
 	function view(arg) {
 		$(".time1, .time2, .time3, .ad1, .ad2, .ad3").css("display", "none");
 		if (arg == "0") {
+			
 			$(".time2, .ad2").css("display", "block");
 			viewcount = 1;
 		} else if (arg == "1") {

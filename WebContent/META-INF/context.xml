@@ -1,14 +1,41 @@
 <Context>
-	<Resource name = "jdbc/joyrapture"
+	<Resource 
+	name="jdbc/joyrapture"
+	auth="Container"
+	type="javax.sql.DataSource"
+	driverClassName="com.mysql.jdbc.Driver"
+	url="jdbc:mysql://localhost/joyrapture"
+	username="joyrapture"
+	password="Qlalfdb715!"
+	maxActive="20"
+	maxIdle="10"
+	maxWait="3000"/>
+</Context>
+
+<!-- <Context>
+	<Resource name = "jdbc_mariadb"
 		auth = "Container"
 		type = "javax.sql.DataSource"
-		username = "joyrapture"
-		password = "Qlalfdb715!"
-		driverClassName = "com.mysql.jdbc.Driver"
-		url = "jdbc:mysql://localhost/joyrapture"
+		username = "root"
+		password = "1234"
+		driverClassName = "org.mariadb.jdbc.Driver"
+		url = "jdbc:mariadb://localhost:3306/test_morahaji"
 		maxTotal = "500"
 		maxIdle = "100"/>
-</Context>
+</Context> -->
+
+<!-- <Context>
+	<Resource name = "jdbc/OracleDB"
+		auth = "Container"
+		type = "javax.sql.DataSource"
+		username = "ELENA"
+		password = "1234"
+		driverClassName = "oracle.jdbc.driver.OracleDriver"
+		factory = "org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory"
+		url = "jdbc:oracle:thin:@127.0.0.1:1521:xe"
+		maxTotal = "500"
+		maxIdle = "100"/>
+</Context> -->
 
 		
 <!-- JNDI에 설정해 놓았다는 것을 context.xml에 리소스를 생성해놓은 것을 말합니다.

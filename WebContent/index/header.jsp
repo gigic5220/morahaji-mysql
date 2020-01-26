@@ -73,7 +73,7 @@
 				href="main.index">Home </a></li>
 			<li class="nav-item"><a class="nav-link"
 				href="javascript:void(0);" onclick="registerWord();">단어등록</a></li>
-			<li class="nav-item"><a class="nav-link" href="BoardList.bo">자유게시판</a></li>
+			<!-- <li class="nav-item"><a class="nav-link" href="BoardList.bo">자유게시판</a></li> -->
 <!-- 			<li class="nav-item"><a class="nav-link disabled" href="#">문의하기</a>
 			</li>-->
 			<c:if test="${userId =='admin'}">

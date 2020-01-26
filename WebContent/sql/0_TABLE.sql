@@ -119,3 +119,18 @@ LEFT OUTER JOIN (SELECT COUNT(*) AS HATECOUNT, WORD_KEY FROM COUNT WHERE POST_TY
 ON CH.WORD_KEY = W.WORD_KEY;
 
 COMMIT;
+
+
+CREATE OR REPLACE VIEW likecount AS
+SELECT count(*) AS likecount, w.word_key FROM count c, word w WHERE post_type = 'word' AND count_type='like' GROUP BY w.word_key;
+
+
+CREATE OR REPLACE VIEW hatecount AS
+SELECT count(*) AS hatecount, word_key FROM count WHERE post_type = 'word' AND count_type='hate' GROUP BY word_key;
+
+CREATE OR REPLACE VIEW wordlist AS
+SELECT w.word_key, w.user_key, w.word_title, w.word_content, w.word_exSentence, w.word_date, w.word_gif,
+cl.likecount, ch.hatecount
+FROM word AS w, likecount AS cl, hatecount AS ch
+WHERE w.word_key=cl.word_key
+AND w.word_key=ch.word_key;

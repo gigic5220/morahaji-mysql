@@ -53,6 +53,14 @@ public class FrontController extends HttpServlet {
 //			forward = new ActionForward();
 //			forward.setRedirect(false);
 //			forward.setPath("index/index.jsp");
+		} else if (command.equals("/tables.index")) {
+			forward = new ActionForward();
+			forward.setRedirect(false);
+			forward.setPath("index/tableTest.jsp");
+		} else if (command.equals("/words.index")) {
+			forward = new ActionForward();
+			forward.setRedirect(false);
+			forward.setPath("index/selectTest.jsp");
 		}
 		if (forward != null) {
 			if (forward.isRedirect()) {

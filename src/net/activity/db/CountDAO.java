@@ -21,7 +21,8 @@ public class CountDAO {
 	public CountDAO() {
 		try {
 			Context init = new InitialContext();
-			ds = (DataSource) init.lookup("java:comp/env/jdbc_mariadb");
+			ds = (DataSource) init.lookup("java:comp/env/jdbc/joyrapture");
+//			ds = (DataSource) init.lookup("java:comp/env/jdbc_mariadb");
 		} catch (Exception ex) {
 			System.err.println("CountDAO DB 연결 실패 : " + ex);
 		}
@@ -71,7 +72,7 @@ public class CountDAO {
 	public boolean isLike(Connection con, int wordKey, int userKey, String postType) {
 		try {
 			pstmt = con.prepareStatement(
-					"select * from count where user_key = ? AND count_type = 'like' AND post_type = ? AND word_key = ?");
+					"select * from counts where user_key = ? AND count_type = 'like' AND post_type = ? AND word_key = ?");
 			pstmt.setInt(1, userKey);
 			pstmt.setString(2, postType);
 			pstmt.setInt(3, wordKey);
@@ -93,7 +94,7 @@ public class CountDAO {
 	public boolean isHate(Connection con, int wordKey, int userKey, String postType) {
 		try {
 			pstmt = con.prepareStatement(
-					"select * from count where user_key = ? AND count_type = 'hate' AND post_type = ? AND word_key = ?");
+					"select * from counts where user_key = ? AND count_type = 'hate' AND post_type = ? AND word_key = ?");
 			pstmt.setInt(1, userKey);
 			pstmt.setString(2, postType);
 			pstmt.setInt(3, wordKey);
@@ -115,7 +116,7 @@ public class CountDAO {
 	public boolean isBookmark(Connection con, int wordKey, int userKey, String postType) {
 		try {
 			pstmt = con.prepareStatement(
-					"select * from count where user_key = ? AND count_type = 'bookmark' AND post_type = ? AND word_key = ?");
+					"select * from counts where user_key = ? AND count_type = 'bookmark' AND post_type = ? AND word_key = ?");
 			pstmt.setInt(1, userKey);
 			pstmt.setString(2, postType);
 			pstmt.setInt(3, wordKey);
@@ -160,9 +161,9 @@ public class CountDAO {
 
 			String sql = "";
 			if (addCountSource.get("postType").equals("word"))
-				sql = "INSERT INTO COUNT VALUES(?, ?, ?, now(), null, ?)";
+				sql = "INSERT INTO COUNTS VALUES(?, ?, ?, now(), null, ?)";
 			if (addCountSource.get("postType").equals("board"))
-				sql = "INSERT INTO COUNT VALUES(?, ?, ?, now(), ?, null)";
+				sql = "INSERT INTO COUNTS VALUES(?, ?, ?, now(), ?, null)";
 			pstmt = con.prepareStatement(sql);
 			if (addCountSource.get("userKey") == null)
 				pstmt.setNull(1, Types.INTEGER);
@@ -189,9 +190,9 @@ public class CountDAO {
 
 			String sql = "";
 			if (removeCountSource.get("postType").equals("word"))
-				sql = "DELETE FROM COUNT WHERE USER_KEY = ? AND WORD_KEY = ? AND COUNT_TYPE = ?";
+				sql = "DELETE FROM COUNTS WHERE USER_KEY = ? AND WORD_KEY = ? AND COUNT_TYPE = ?";
 			if (removeCountSource.get("postType").equals("board"))
-				sql = "DELETE FROM COUNT WHERE USER_KEY = ? AND BOARD_KEY = ? AND COUNT_TYPE = ?";
+				sql = "DELETE FROM COUNTS WHERE USER_KEY = ? AND BOARD_KEY = ? AND COUNT_TYPE = ?";
 			pstmt = con.prepareStatement(sql);
 			if (removeCountSource.get("userKey") == null)
 				pstmt.setNull(1, Types.INTEGER);
@@ -305,7 +306,7 @@ public class CountDAO {
 		try {
 			con = ds.getConnection();
 
-			pstmt = con.prepareStatement("DELETE FROM COUNT WHERE WORD_KEY = ?");
+			pstmt = con.prepareStatement("DELETE FROM COUNTS WHERE WORD_KEY = ?");
 			pstmt.setInt(1, wordkey);
 			result = pstmt.executeUpdate();
 
@@ -340,7 +341,7 @@ public class CountDAO {
 	public boolean isCountBoard(int boardKey) {
 		try {
 			con = ds.getConnection();
-			pstmt = con.prepareStatement("select * from count where board_key = ?");
+			pstmt = con.prepareStatement("select * from counts where board_key = ?");
 			pstmt.setInt(1, boardKey);
 
 			rs = pstmt.executeQuery();
@@ -381,7 +382,7 @@ public class CountDAO {
 		try {
 			con = ds.getConnection();
 
-			pstmt = con.prepareStatement("DELETE FROM COUNT WHERE BOARD_KEY = ?");
+			pstmt = con.prepareStatement("DELETE FROM COUNTS WHERE BOARD_KEY = ?");
 			pstmt.setInt(1, boardkey);
 			result = pstmt.executeUpdate();
 
