@@ -39,4 +39,9 @@
             papago : 한/영 번역
 
         * 헤더
+        
+**기타**
+   * Oracle DB 문법의 쿼리문을 MariaDB 문법에 맞춰 변경
+   * 웹호스팅
+   * joyrapture.cafe24.com/morahaji
 
