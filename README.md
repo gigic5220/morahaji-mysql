@@ -44,5 +44,5 @@
    * [MORAHAJI (Oracle)](https://github.com/JoyRapture/morahaji) 버전 수정
       * Oracle DB 문법의 쿼리문을 MariaDB 문법에 맞춰 변경
       * 웹호스팅
-      * [실제 사이트 - MORAHAJI](http://joyrapture.cafe24.com/morahaji/)
+      * [실제 사이트 - MORAHAJI](http://joyrapture.cafe24.com/morahaji/){: target="_blank" }
 
