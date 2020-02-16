@@ -287,7 +287,7 @@ color: #007bff;
 
 				<hr>
 
-				<c:if test="${boarddata.BOARD_GIF != null}">
+				<c:if test="${boarddata.BOARD_GIF != null || boarddata.BOARD_GIF != '' || boarddata.BOARD_GIF != 'NULL'}">
 					<!-- GIF 영역 시작 -->
 					<div class="forgif">
 						<img class="card-img-top" src="${boarddata.BOARD_GIF}"

@@ -60,7 +60,7 @@ public class UserDAO {
 				con = ds.getConnection();
 
 				pstmt = con.prepareStatement(
-						"INSERT INTO USERS (USER_ID, USER_NAME, USER_EMAIL, USER_PASSWORD, USER_AGERANGE, USER_STATUS) VALUES( ?, ?, ?, ?, ?, '1')");
+						"INSERT INTO users (USER_ID, USER_NAME, USER_EMAIL, USER_PASSWORD, USER_AGERANGE, USER_STATUS) VALUES( ?, ?, ?, ?, ?, '1')");
 				pstmt.setString(1, u.getUSER_ID());
 				pstmt.setString(2, u.getUSER_NAME());
 				pstmt.setString(3, u.getUSER_EMAIL());
@@ -85,7 +85,7 @@ public class UserDAO {
 			con = ds.getConnection();
 
 			pstmt = con.prepareStatement(
-					"INSERT INTO lastActivity VALUES((select USER_KEY from USERS where USER_ID = ?), now())");
+					"INSERT INTO lastActivity VALUES((select USER_KEY from users where USER_ID = ?), now())");
 			pstmt.setString(1, id);
 			result = pstmt.executeUpdate();
 
@@ -252,7 +252,7 @@ public class UserDAO {
 			con = ds.getConnection();
 
 			StringBuilder sql = new StringBuilder();
-			sql.append("UPDATE USERS ");
+			sql.append("UPDATE users ");
 			sql.append("SET USER_PASSWORD = ? ");
 			sql.append("WHERE USER_ID = ? AND USER_EMAIL = ?");
 
@@ -383,7 +383,7 @@ public class UserDAO {
 		int result = 0;
 		try {
 			con = ds.getConnection();
-			String sql = "UPDATE USERS SET USER_NAME=? WHERE USER_KEY=?";
+			String sql = "UPDATE users SET USER_NAME=? WHERE USER_KEY=?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, userName);
 			pstmt.setInt(2, userKey);
@@ -406,7 +406,7 @@ public class UserDAO {
 		int result = 0;
 		try {
 			con = ds.getConnection();
-			String sql = "UPDATE USERS SET USER_EMAIL=? WHERE USER_KEY=?";
+			String sql = "UPDATE users SET USER_EMAIL=? WHERE USER_KEY=?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, userEmail);
 			pstmt.setInt(2, userKey);
@@ -429,7 +429,7 @@ public class UserDAO {
 		USERS u = new USERS();
 		try {
 			con = ds.getConnection();
-			pstmt = con.prepareStatement("select * from USERS where USER_KEY = ? ");
+			pstmt = con.prepareStatement("select * from users where USER_KEY = ? ");
 			pstmt.setInt(1, userKey);
 			rs = pstmt.executeQuery();
 
@@ -458,7 +458,7 @@ public class UserDAO {
 		int result = 0;
 		try {
 			con = ds.getConnection();
-			String sql = "UPDATE USERS SET USER_AGERANGE=? WHERE USER_KEY=?";
+			String sql = "UPDATE users SET USER_AGERANGE=? WHERE USER_KEY=?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, newAge);
 			pstmt.setInt(2, userKey);
@@ -481,7 +481,7 @@ public class UserDAO {
 		result = 0;
 		try {
 			con = ds.getConnection();
-			String sql = "UPDATE USERS SET USER_STATUS = '0' WHERE USER_KEY = ?";// 계정만 삭제함
+			String sql = "UPDATE users SET USER_STATUS = '0' WHERE USER_KEY = ?";// 계정만 삭제함
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, userKey);
 			result = pstmt.executeUpdate();
@@ -503,7 +503,7 @@ public class UserDAO {
 		int result = 0;
 		try {
 			con = ds.getConnection();
-			String sql = "UPDATE USERS SET USER_PASSWORD=? WHERE USER_KEY=?";
+			String sql = "UPDATE users SET USER_PASSWORD=? WHERE USER_KEY=?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, newPass);
 			pstmt.setInt(2, userKey);
@@ -522,7 +522,7 @@ public class UserDAO {
 	}// updatePass end
 
 	public boolean photoUpdate(int userKey, String filename) {
-		String sql = "UPDATE USERS SET USER_PROFILEPHOTO=? WHERE USER_KEY = ?";
+		String sql = "UPDATE users SET USER_PROFILEPHOTO=? WHERE USER_KEY = ?";
 		try {
 			con = ds.getConnection();
 			pstmt = con.prepareStatement(sql);

@@ -72,7 +72,8 @@ public class ReplyDAO {
 
 	public JsonArray getReplyList(int BOARD_KEY) {
 		UserDAO userDAO = new  UserDAO(); 
-		String sql = "select reply_key, user_key, reply_content, TO_CHAR(reply_date,'YYYY-MM-DD HH24:Mi:SS') reply_date, board_key, reply_re_ref, reply_re_lev, reply_re_seq from reply where board_key = ? order by REPLY_RE_REF asc, REPLY_RE_SEQ asc";
+		String sql = "select reply_key, user_key, reply_content, reply_date, board_key, reply_re_ref, reply_re_lev, reply_re_seq " + 
+				"from reply where board_key = ? order by REPLY_RE_REF asc, REPLY_RE_SEQ asc";
 		JsonArray array = new JsonArray();
 		try {
 			conn = ds.getConnection();
@@ -128,7 +129,7 @@ public class ReplyDAO {
 		int result = 0;
 		try {
 			conn = ds.getConnection();
-			String sql = "insert into reply values((select ifnull(max(reply_key),0)+1 from reply), ?, ?, ?, now(), (select nvl(max(reply_key),0)+1 from reply), 0, 0)";
+			String sql = "insert into reply values((select ifnull(max(reply_key),0)+1 from reply ALIAS_FOR_SUBQUERY), ?, ?, ?, now(), (select ifnull(max(reply_key),0)+1 from reply), 0, 0)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, rp.getUSER_KEY());
 			pstmt.setInt(2, rp.getBOARD_KEY());
@@ -182,7 +183,7 @@ public class ReplyDAO {
 			// 다른 답글이 있으면
 			// 다른 답글들의 BOARD_RE_SEQ값을 1씩 증가시킵니다.
 			// 현재 글을 다른 답글보다 앞에 출력되게 하기 위해서입니다.
-			sql = "UPDATE REPLY SET REPLY_RE_SEQ = REPLY_RE_SEQ + 1 WHERE REPLY_RE_REF = ? AND REPLY_RE_SEQ > ?";
+			sql = "UPDATE reply SET REPLY_RE_SEQ = REPLY_RE_SEQ + 1 , reply_date=reply_date WHERE REPLY_RE_REF = ? AND REPLY_RE_SEQ > ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, re_ref);
 			pstmt.setInt(2, re_seq);
@@ -227,7 +228,7 @@ public class ReplyDAO {
 		int result = 0;
 		try {
 			conn = ds.getConnection();
-			String sql = "update reply set reply_content=? where reply_key=?";
+			String sql = "update reply set reply_content=?, reply_date=reply_date where reply_key=?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, rp.getREPLY_CONTENT());
 			pstmt.setInt(2, rp.getREPLY_KEY());
@@ -246,21 +247,22 @@ public class ReplyDAO {
 
 	public boolean replydelete(int re_ref, int re_seq, int re_lev) {
 		boolean result = false;
-		String sql = "delete reply "
-				+ "where reply_re_ref=? and reply_re_lev>=? and reply_re_seq>=? and reply_re_seq<(ifnull((select min(reply_re_seq) "
-				+ "from reply "
-				+ "where reply_re_lev=? and reply_re_seq>? and reply_re_ref=?), (select max(reply_re_seq)+1 "
-				+ "from reply " + "where reply_re_ref=?)))";
+		//String sql = "delete from reply "
+		//		+ "where reply_re_ref=? and reply_re_lev>=? and reply_re_seq>=? and reply_re_seq<(ifnull((select min(reply_re_seq) "
+		//		+ "from reply ALIAS_FOR_SUBQUERY "
+		//		+ "where reply_re_lev=? and reply_re_seq>? and reply_re_ref=?), (select max(reply_re_seq)+1 "
+		//		+ "from reply ALIAS_FOR_SUBQUERY " + "where reply_re_ref=?)))";
+		String sql = "delete from reply where reply_re_ref=? and reply_re_lev>=? and reply_re_seq>=?";
 		try {
 			conn = ds.getConnection();
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, re_ref);
 			pstmt.setInt(2, re_lev);
 			pstmt.setInt(3, re_seq);
-			pstmt.setInt(4, re_lev);
-			pstmt.setInt(5, re_seq);
-			pstmt.setInt(6, re_ref);
-			pstmt.setInt(7, re_ref);
+			//pstmt.setInt(4, re_lev);
+			//pstmt.setInt(5, re_seq);
+			//pstmt.setInt(6, re_ref);
+			//pstmt.setInt(7, re_ref);
 			int result1 = pstmt.executeUpdate();
 			if (result1 > 0) {
 				result = true;

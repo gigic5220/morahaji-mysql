@@ -8,7 +8,7 @@ public class BoardBean {
 	private String BOARD_TITLE;
 	private String BOARD_TITLE_AFTER;
 	private String BOARD_CONTENT;
-	private String BOARD_GIF;
+	private String BOARD_GIF = "null";
 	private String BOARD_DATE;
 	private String BOARD_CONTENT_BEFORE;
 	private String BOARD_CONTENT_AFTER;

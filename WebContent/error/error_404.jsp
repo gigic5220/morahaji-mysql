@@ -46,7 +46,7 @@ response.setStatus(HttpServletResponse.SC_OK);
 	<!-- Body Start -->
 	<div id=errorPage>
 		<button class=historyBack>돌아가기</button>
-		<br> <a href="main.index"> <img id=errorImg
+		<br> <a href="../morahaji/main.index"> <img id=errorImg
 			src="img/404error.gif" title="메인 페이지로 이동">
 		</a>
 	</div>

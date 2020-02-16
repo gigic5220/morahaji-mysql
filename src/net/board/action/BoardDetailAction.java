@@ -43,6 +43,7 @@ public class BoardDetailAction implements Action {
 			forward.setPath("error/error.jsp");
 			return forward;
 		}
+		
 		request.setAttribute("loginUserkey", session.getAttribute("userKey"));
 		request.setAttribute("boarddata", boarddata);
 		request.setAttribute("boardkey", num);

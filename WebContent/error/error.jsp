@@ -43,8 +43,8 @@
 	<!-- Body Start -->
 	<div id=errorPage>
 		<button class=historyBack>돌아가기</button>
-		<br> <a href="../main.index"> <img id=errorImg
-			src="../img/error.gif" title="메인 페이지로 이동">
+		<br> <a href="../morahaji/main.index"> <img id=errorImg
+			src="img/error.gif" title="메인 페이지로 이동">
 		</a>
 	</div>
 	<!-- Body End -->

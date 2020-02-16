@@ -643,9 +643,6 @@ input:checked+label>i {
 			</div>
 		</div>
 	</div>
-
-
-
 </body>
 <script>
 $(document).ready(function(){
@@ -740,40 +737,47 @@ $(document).ready(function(){
 		})
 		$(".likeBox").ready(function() {
 			$(".likeDiv").click(function() { // 좋아요
-				var wordKey = $(this).find('span').attr('id');
-				if ($(this).hasClass("likeOncolor > i")) { // 좋아요 취소
-					$(this).removeClass("likeOncolor > i");
-					removeCount(wordKey, 'like');
-				} else { // 좋아요 안함
-					if ($(this).next().hasClass("likeOncolor > i")) { // 싫어요 -> 좋아요
-						$(this).next().removeClass("likeOncolor > i");
-						$(this).toggleClass("likeOncolor > i");
-						removeCount(wordKey, 'hate');
-						addCount(wordKey, 'like');
-					} else { // 좋아요
-						$(this).toggleClass("likeOncolor > i");
-						addCount(wordKey, 'like');
+				if ("${userKey}" != "") {
+					var wordKey = $(this).find('span').attr('id');
+					if ($(this).hasClass("likeOncolor > i")) { // 좋아요 취소
+						$(this).removeClass("likeOncolor > i");
+						removeCount(wordKey, 'like');
+					} else { // 좋아요 안함
+						if ($(this).next().hasClass("likeOncolor > i")) { // 싫어요 -> 좋아요
+							$(this).next().removeClass("likeOncolor > i");
+							$(this).toggleClass("likeOncolor > i");
+							removeCount(wordKey, 'hate');
+							addCount(wordKey, 'like');
+						} else { // 좋아요
+							$(this).toggleClass("likeOncolor > i");
+							addCount(wordKey, 'like');
+						}
 					}
+				} else {
+					location.href = "login.net";
 				}
 			})
 			$(".dislikeDiv").click(function() { // 싫어요
-				var wordKey = $(this).find('span').attr('id');
-				if ($(this).hasClass("likeOncolor > i")) { // 싫어요 취소
-					$(this).removeClass("likeOncolor > i");
-					removeCount(wordKey, 'hate');
-				} else {
-					if ($(this).prev().hasClass("likeOncolor > i")) { // 좋아요 -> 싫어요
-						$(this).prev().removeClass("likeOncolor > i")
-						$(this).toggleClass("likeOncolor > i");
-						removeCount(wordKey, 'like');
-						addCount(wordKey, 'hate');
-					} else { // 싫어요
-						$(this).toggleClass("likeOncolor > i");
-						addCount(wordKey, 'hate');
+				if ("${userKey}" != "") {
+					var wordKey = $(this).find('span').attr('id');
+					if ($(this).hasClass("likeOncolor > i")) { // 싫어요 취소
+						$(this).removeClass("likeOncolor > i");
+						removeCount(wordKey, 'hate');
+					} else {
+						if ($(this).prev().hasClass("likeOncolor > i")) { // 좋아요 -> 싫어요
+							$(this).prev().removeClass("likeOncolor > i")
+							$(this).toggleClass("likeOncolor > i");
+							removeCount(wordKey, 'like');
+							addCount(wordKey, 'hate');
+						} else { // 싫어요
+							$(this).toggleClass("likeOncolor > i");
+							addCount(wordKey, 'hate');
+						}
 					}
+				} else {
+					location.href = "login.net";
 				}
 			})
-
 		})
 
 		$("#deletemodalSubmit").click(function() {

@@ -51,7 +51,7 @@ public class HashTagDAO {
 		try {
 			con = ds.getConnection();
 
-			pstmt = con.prepareStatement("SELECT * FROM HASHTAG WHERE HASH_TITLE = ? ");
+			pstmt = con.prepareStatement("SELECT * FROM hashtag WHERE HASH_TITLE = ? ");
 			pstmt.setString(1, hashtag);
 			rs = pstmt.executeQuery();
 
@@ -74,7 +74,7 @@ public class HashTagDAO {
 		try {
 			con = ds.getConnection();
 
-			pstmt = con.prepareStatement("SELECT * FROM HASHTAG_POST WHERE WORD_KEY = ? ");
+			pstmt = con.prepareStatement("SELECT * FROM hashtag_post WHERE WORD_KEY = ? ");
 			pstmt.setInt(1, wordKey);
 			rs = pstmt.executeQuery();
 
@@ -97,7 +97,7 @@ public class HashTagDAO {
 		try {
 			con = ds.getConnection();
 
-			pstmt = con.prepareStatement("select ifnull(max(HASH_KEY),0) from HASHTAG");
+			pstmt = con.prepareStatement("select ifnull(max(HASH_KEY),0) from hashtag");
 			rs = pstmt.executeQuery();
 			if (rs.next())
 				return (rs.getInt(1) + 1);
@@ -115,7 +115,7 @@ public class HashTagDAO {
 		try {
 			con = ds.getConnection();
 
-			pstmt = con.prepareStatement("INSERT INTO HASHTAG VALUES(?, ?)");
+			pstmt = con.prepareStatement("INSERT INTO hashtag VALUES(?, ?)");
 			pstmt.setInt(1, hashtagKey);
 			pstmt.setString(2, hashtag);
 			result = pstmt.executeUpdate();
@@ -140,7 +140,7 @@ public class HashTagDAO {
 
 			System.out.println("HAASH입력" + hashtag + "/" + wordKey);
 			pstmt = con.prepareStatement(
-					"INSERT INTO HASHTAG_POST(HASH_KEY, WORD_KEY) VALUES((select HASH_KEY from hashtag where HASH_TITLE = ? ), ?)");
+					"INSERT INTO hashtag_post(HASH_KEY, WORD_KEY) VALUES((select HASH_KEY from hashtag where HASH_TITLE = ? ), ?)");
 			pstmt.setString(1, hashtag);
 			pstmt.setInt(2, wordKey);
 			result = pstmt.executeUpdate();
@@ -161,7 +161,7 @@ public class HashTagDAO {
 	public int deleteHashtagWord(int wordKey) { // 해시태그가 들어간 곳 삭제 - 단어
 		try {
 			con = ds.getConnection();
-			pstmt = con.prepareStatement("DELETE FROM HASHTAG_POST WHERE WORD_KEY= ? ");
+			pstmt = con.prepareStatement("DELETE FROM hashtag_post WHERE WORD_KEY= ? ");
 			pstmt.setInt(1, wordKey);
 			result = pstmt.executeUpdate();
 			if (result > 0)
@@ -205,7 +205,7 @@ public class HashTagDAO {
 			con = ds.getConnection();
 
 			pstmt = con.prepareStatement(
-					"select WORD_KEY from hashtag_post where hash_key = (SELECT HASH_KEY FROM HASHTAG WHERE HASH_TITLE = ? ) GROUP BY WORD_KEY ");
+					"select WORD_KEY from hashtag_post where hash_key = (SELECT HASH_KEY FROM hashtag WHERE HASH_TITLE = ? ) GROUP BY WORD_KEY ");
 			pstmt.setString(1, tag);
 			rs = pstmt.executeQuery();
 

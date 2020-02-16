@@ -22,7 +22,7 @@ java.io.*"%>
 		// cafe24
 		Class.forName("com.mysql.jdbc.Driver");
 		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/joyrapture", "joyrapture",
-				"Qlalfdb715!");
+				"Qlqjs0987!");
 		Statement stmt = conn.createStatement();
 		ResultSet rset = stmt.executeQuery("show tables");
 		ArrayList<String> tables = new ArrayList<String>();

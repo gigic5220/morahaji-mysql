@@ -17,7 +17,7 @@
 		auth = "Container"
 		type = "javax.sql.DataSource"
 		username = "joyrapture"
-		password = "Qlalfdb715!"
+		password = "Qlqjs0987!"
 		driverClassName = "com.mysql.jdbc.Driver"
 		url = "jdbc:mysql://localhost/joyrapture"
 		maxTotal = "500"

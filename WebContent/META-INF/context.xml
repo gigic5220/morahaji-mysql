@@ -6,7 +6,7 @@
 	driverClassName="com.mysql.jdbc.Driver"
 	url="jdbc:mysql://localhost/joyrapture"
 	username="joyrapture"
-	password="Qlalfdb715!"
+	password="Qlqjs0987!"
 	maxActive="20"
 	maxIdle="10"
 	maxWait="3000"/>

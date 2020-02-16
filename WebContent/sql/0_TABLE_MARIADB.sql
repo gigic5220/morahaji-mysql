@@ -18,7 +18,7 @@ CREATE TABLE users (
   user_ageRange varchar(20),
   user_profilePhoto varchar(250),
   user_status CHAR(1)
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE word (
   word_key int PRIMARY KEY AUTO_INCREMENT,
@@ -28,7 +28,7 @@ CREATE TABLE word (
   word_exSentence varchar(250) NOT NULL,
   word_date timestamp NOT NULL,
   word_gif varchar(250)
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE board (
   board_key int PRIMARY KEY AUTO_INCREMENT,
@@ -38,7 +38,7 @@ CREATE TABLE board (
   board_gif varchar(250),
   board_date timestamp NOT NULL,
   BOARD_READCOUNT int default 0
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE reply (
   reply_key int PRIMARY KEY AUTO_INCREMENT,
@@ -49,17 +49,17 @@ CREATE TABLE reply (
   reply_re_ref int,
   reply_re_lev int,
   REPLY_RE_SEQ int
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE hashtag (
   hash_key int PRIMARY KEY AUTO_INCREMENT,
   hash_title varchar(100)
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE hashtag_post (
   hash_key int NOT NULL,
   word_key int
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE counts (
   user_key int,
@@ -68,7 +68,7 @@ CREATE TABLE counts (
   count_date timestamp NOT NULL,
   board_key int,
   word_key int
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE reportcount (
   user_key int,
@@ -76,12 +76,12 @@ CREATE TABLE reportcount (
   report_reason varchar(250),
   board_key int,
   word_key int
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE lastActivity (
   user_key int,
   lastAct timestamp NOT NULL
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE word ADD FOREIGN KEY (user_key) REFERENCES users (user_key);
 

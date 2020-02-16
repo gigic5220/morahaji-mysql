@@ -52,7 +52,7 @@ public class CountDAO {
 			con = ds.getConnection();
 
 			pstmt = con.prepareStatement(
-					"select count(*) from count where word_key = ? AND count_type = ? AND post_type = ?");
+					"select count(*) from counts where word_key = ? AND count_type = ? AND post_type = ?");
 			pstmt.setInt(1, wordKey);
 			pstmt.setString(2, countType);
 			pstmt.setString(3, postType);
@@ -161,9 +161,9 @@ public class CountDAO {
 
 			String sql = "";
 			if (addCountSource.get("postType").equals("word"))
-				sql = "INSERT INTO COUNTS VALUES(?, ?, ?, now(), null, ?)";
+				sql = "INSERT INTO counts VALUES(?, ?, ?, now(), null, ?)";
 			if (addCountSource.get("postType").equals("board"))
-				sql = "INSERT INTO COUNTS VALUES(?, ?, ?, now(), ?, null)";
+				sql = "INSERT INTO counts VALUES(?, ?, ?, now(), ?, null)";
 			pstmt = con.prepareStatement(sql);
 			if (addCountSource.get("userKey") == null)
 				pstmt.setNull(1, Types.INTEGER);
@@ -190,9 +190,9 @@ public class CountDAO {
 
 			String sql = "";
 			if (removeCountSource.get("postType").equals("word"))
-				sql = "DELETE FROM COUNTS WHERE USER_KEY = ? AND WORD_KEY = ? AND COUNT_TYPE = ?";
+				sql = "DELETE FROM counts WHERE USER_KEY = ? AND WORD_KEY = ? AND COUNT_TYPE = ?";
 			if (removeCountSource.get("postType").equals("board"))
-				sql = "DELETE FROM COUNTS WHERE USER_KEY = ? AND BOARD_KEY = ? AND COUNT_TYPE = ?";
+				sql = "DELETE FROM counts WHERE USER_KEY = ? AND BOARD_KEY = ? AND COUNT_TYPE = ?";
 			pstmt = con.prepareStatement(sql);
 			if (removeCountSource.get("userKey") == null)
 				pstmt.setNull(1, Types.INTEGER);
@@ -218,9 +218,9 @@ public class CountDAO {
 
 			String sql = "";
 			if (addReportSource.get("postType").equals("word"))
-				sql = "INSERT INTO REPORTCOUNT VALUES(?, now(), ?, null, ?)";
+				sql = "INSERT INTO reportcount VALUES(?, now(), ?, null, ?)";
 			if (addReportSource.get("postType").equals("board"))
-				sql = "INSERT INTO REPORTCOUNT VALUES(?, now(), ?, ?, null)";
+				sql = "INSERT INTO reportcount VALUES(?, now(), ?, ?, null)";
 			pstmt = con.prepareStatement(sql);
 
 			pstmt.setInt(1, Integer.parseInt(addReportSource.get("userKey")));
@@ -244,9 +244,9 @@ public class CountDAO {
 
 			String sql = "";
 			if (removeCountSource.get("postType").equals("word"))
-				sql = "DELETE FROM REPORTCOUNT WHERE USER_KEY = ? AND WORD_KEY = ?";
+				sql = "DELETE FROM reportcount WHERE USER_KEY = ? AND WORD_KEY = ?";
 			if (removeCountSource.get("postType").equals("board"))
-				sql = "DELETE FROM REPORTCOUNT WHERE USER_KEY = ? AND BOARD_KEY = ?";
+				sql = "DELETE FROM reportcount WHERE USER_KEY = ? AND BOARD_KEY = ?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, Integer.parseInt(removeCountSource.get("userKey")));
 			pstmt.setInt(2, Integer.parseInt(removeCountSource.get("postKey")));
@@ -306,7 +306,7 @@ public class CountDAO {
 		try {
 			con = ds.getConnection();
 
-			pstmt = con.prepareStatement("DELETE FROM COUNTS WHERE WORD_KEY = ?");
+			pstmt = con.prepareStatement("DELETE FROM counts WHERE WORD_KEY = ?");
 			pstmt.setInt(1, wordkey);
 			result = pstmt.executeUpdate();
 
@@ -324,7 +324,7 @@ public class CountDAO {
 		try {
 			con = ds.getConnection();
 
-			pstmt = con.prepareStatement("DELETE FROM REPORTCOUNT WHERE WORD_KEY = ?");
+			pstmt = con.prepareStatement("DELETE FROM reportcount WHERE WORD_KEY = ?");
 			pstmt.setInt(1, wordkey);
 			result = pstmt.executeUpdate();
 
@@ -382,7 +382,7 @@ public class CountDAO {
 		try {
 			con = ds.getConnection();
 
-			pstmt = con.prepareStatement("DELETE FROM COUNTS WHERE BOARD_KEY = ?");
+			pstmt = con.prepareStatement("DELETE FROM counts WHERE BOARD_KEY = ?");
 			pstmt.setInt(1, boardkey);
 			result = pstmt.executeUpdate();
 

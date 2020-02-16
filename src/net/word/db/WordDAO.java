@@ -704,7 +704,7 @@ public class WordDAO {
 		try {
 			con = ds.getConnection();
 
-			pstmt = con.prepareStatement("select * from WORD where WORD_KEY = ? ");
+			pstmt = con.prepareStatement("select * from word where WORD_KEY = ? ");
 			pstmt.setInt(1, wordKey);
 			rs = pstmt.executeQuery();
 
@@ -737,7 +737,7 @@ public class WordDAO {
 	public int deleteWord(int wordKey) {
 		try {
 			con = ds.getConnection();
-			pstmt = con.prepareStatement("DELETE FROM WORD WHERE WORD_KEY = ? ");
+			pstmt = con.prepareStatement("DELETE FROM word WHERE WORD_KEY = ? ");
 			pstmt.setInt(1, wordKey);
 			result = pstmt.executeUpdate();
 
@@ -758,7 +758,7 @@ public class WordDAO {
 		try {
 			con = ds.getConnection();
 
-			String sql = "SELECT * FROM WORD where word_key=?";
+			String sql = "SELECT * FROM word where word_key=?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, wordkey);
 			rs = pstmt.executeQuery();
@@ -789,7 +789,7 @@ public class WordDAO {
       List<String> titles = new ArrayList<String>();
       try {
          con = ds.getConnection();
-         String sql = "SELECT WORD_TITLE from WORD WHERE  UPPER(WORD_TITLE) LIKE UPPER(?)";
+         String sql = "SELECT WORD_TITLE from word WHERE  UPPER(WORD_TITLE) LIKE UPPER(?)";
          pstmt = con.prepareStatement(sql);
          pstmt.setString(1, "%"+title+"%");
          rs = pstmt.executeQuery();

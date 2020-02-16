@@ -329,7 +329,7 @@ function ajax(data) {
 $(function(){
    
    $("#write").click(function (){
-         if("${userKey}" != "null"){
+         if("${userKey}" != ""){
             location.href = "BoardWrite.bo";
          } else {
             location.href = "login.net";
