@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ page errorPage="../error/error_404.jsp"%>
 <style>
 * {
 	font-family: "맑은 고딕";
@@ -287,7 +288,7 @@ color: #007bff;
 
 				<hr>
 
-				<c:if test="${boarddata.BOARD_GIF != null || boarddata.BOARD_GIF != '' || boarddata.BOARD_GIF != 'NULL'}">
+				<c:if test="${boarddata.BOARD_GIF != null}">
 					<!-- GIF 영역 시작 -->
 					<div class="forgif">
 						<img class="card-img-top" src="${boarddata.BOARD_GIF}"

@@ -75,14 +75,24 @@ public class BoardDAO {
 		boolean result = true;
 		try {
 			conn = ds.getConnection();
-			String sql = "INSERT INTO board "
-					+ "(BOARD_KEY, USER_KEY, BOARD_TITLE, BOARD_CONTENT, BOARD_GIF, BOARD_DATE) "
-					+ "VALUES((SELECT ifnull(MAX(BOARD_KEY),0)+1 FROM board  ALIAS_FOR_SUBQUERY),?,?,?,?,now())";
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, user_key);
-			pstmt.setString(2, boarddata.getBOARD_TITLE());
-			pstmt.setString(3, boarddata.getBOARD_CONTENT());
-			pstmt.setString(4, boarddata.getBOARD_GIF());
+			if (boarddata.getBOARD_GIF().length() <= 0) {
+				String sql = "INSERT INTO board "
+						+ "(BOARD_KEY, USER_KEY, BOARD_TITLE, BOARD_CONTENT, BOARD_GIF, BOARD_DATE) "
+						+ "VALUES((SELECT ifnull(MAX(BOARD_KEY),0)+1 FROM board  ALIAS_FOR_SUBQUERY),?,?,?,NULL,now())";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, user_key);
+				pstmt.setString(2, boarddata.getBOARD_TITLE());
+				pstmt.setString(3, boarddata.getBOARD_CONTENT());
+			} else {
+				String sql = "INSERT INTO board "
+						+ "(BOARD_KEY, USER_KEY, BOARD_TITLE, BOARD_CONTENT, BOARD_GIF, BOARD_DATE) "
+						+ "VALUES((SELECT ifnull(MAX(BOARD_KEY),0)+1 FROM board  ALIAS_FOR_SUBQUERY),?,?,?,?,now())";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, user_key);
+				pstmt.setString(2, boarddata.getBOARD_TITLE());
+				pstmt.setString(3, boarddata.getBOARD_CONTENT());
+				pstmt.setString(4, boarddata.getBOARD_GIF());
+			}
 			int result2 = pstmt.executeUpdate();
 			if (result2 == 1) {
 				result = true;
@@ -122,7 +132,8 @@ public class BoardDAO {
 		boolean result = true;
 		try {
 			conn = ds.getConnection();
-			String sql = "UPDATE board " + "SET BOARD_TITLE=?, BOARD_CONTENT=?, BOARD_GIF=?, board_date=board_date " + "WHERE BOARD_KEY=?";
+			String sql = "UPDATE board " + "SET BOARD_TITLE=?, BOARD_CONTENT=?, BOARD_GIF=?, board_date=board_date "
+					+ "WHERE BOARD_KEY=?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, boarddata.getBOARD_TITLE());
 			pstmt.setString(2, boarddata.getBOARD_CONTENT());
@@ -166,7 +177,7 @@ public class BoardDAO {
 		int result = 0;
 		try {
 			conn = ds.getConnection();
-			String sql = "SELECT COUNT(*)" + "FROM board " + "WHERE USER_KEY=?";
+			String sql = "SELECT COUNT(*) FROM board WHERE USER_KEY=?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, user_key);
 			rs = pstmt.executeQuery();
@@ -187,12 +198,11 @@ public class BoardDAO {
 		List<BoardBean> boardbean = new ArrayList<BoardBean>();
 		try {
 			conn = ds.getConnection();
-			String sql = "SELECT z.BOARD_KEY, z.USER_KEY, z.BOARD_TITLE, z.BOARD_DATE, z.BOARD_READCOUNT, ifnull(z.COMMENTCOUNT,0) REPLYCOUNT, ifnull(z.LIKECOUNT,0) LIKECOUNT, z.BOARD_CONTENT " + 
-					"FROM (SELECT x.* " + 
-					"FROM (SELECT * " + 
-					"FROM board LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT " + 
-					"FROM counts GROUP BY BOARD_KEY) D USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT " + 
-					"FROM reply GROUP BY BOARD_KEY) C USING (BOARD_KEY)) x) z ORDER BY BOARD_DATE DESC limit ?, ?";
+			String sql = "SELECT z.BOARD_KEY, z.USER_KEY, z.BOARD_TITLE, z.BOARD_DATE, z.BOARD_READCOUNT, ifnull(z.COMMENTCOUNT,0) REPLYCOUNT, ifnull(z.LIKECOUNT,0) LIKECOUNT, z.BOARD_CONTENT "
+					+ "FROM (SELECT x.* " + "FROM (SELECT * "
+					+ "FROM board LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT "
+					+ "FROM counts GROUP BY BOARD_KEY) D USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT "
+					+ "FROM reply GROUP BY BOARD_KEY) C USING (BOARD_KEY)) x) z ORDER BY BOARD_DATE DESC limit ?, ?";
 			int startrow = (page - 1) * limit;
 //			int endrow = startrow + limit - 1;
 			int endrow = 5;
@@ -255,12 +265,11 @@ public class BoardDAO {
 		List<BoardBean> boardbean = new ArrayList<BoardBean>();
 		try {
 			conn = ds.getConnection();
-			String sql = "SELECT z.BOARD_KEY, z.USER_KEY, z.BOARD_TITLE, z.BOARD_DATE, z.BOARD_READCOUNT, ifnull(z.COMMENTCOUNT,0) REPLYCOUNT, ifnull(z.LIKECOUNT,0) LIKECOUNT, z.BOARD_CONTENT " + 
-					"FROM (SELECT x.* " + 
-					"FROM (SELECT * " + 
-					"FROM board LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT " + 
-					"FROM counts GROUP BY BOARD_KEY) D USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT " + 
-					"FROM reply GROUP BY BOARD_KEY) C USING (BOARD_KEY)) x ) z WHERE USER_KEY=? ORDER BY BOARD_DATE DESC limit ?, ?";
+			String sql = "SELECT z.BOARD_KEY, z.USER_KEY, z.BOARD_TITLE, z.BOARD_DATE, z.BOARD_READCOUNT, ifnull(z.COMMENTCOUNT,0) REPLYCOUNT, ifnull(z.LIKECOUNT,0) LIKECOUNT, z.BOARD_CONTENT "
+					+ "FROM (SELECT x.* " + "FROM (SELECT * "
+					+ "FROM board LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT "
+					+ "FROM counts GROUP BY BOARD_KEY) D USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT "
+					+ "FROM reply GROUP BY BOARD_KEY) C USING (BOARD_KEY)) x ) z WHERE USER_KEY=? ORDER BY BOARD_DATE DESC limit ?, ?";
 			int startrow = (page - 1) * limit;
 //			int endrow = startrow + limit - 1;
 			int endrow = limit;
@@ -411,29 +420,26 @@ public class BoardDAO {
 			String sql = "";
 			// 제목+내용으로 검색할 때 쿼리
 			if (field.equals("title+content")) {
-				sql = "SELECT z.BOARD_KEY, z.USER_KEY, z.BOARD_TITLE, z.BOARD_DATE, z.BOARD_READCOUNT, ifnull(z.COMMENTCOUNT,0) REPLYCOUNT, ifnull(z.LIKECOUNT,0) LIKECOUNT, z.BOARD_CONTENT " + 
-						"FROM (SELECT x.* " + 
-						"FROM (SELECT * " + 
-						"FROM board LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT " + 
-						"FROM counts GROUP BY BOARD_KEY) D USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT " + 
-						"FROM reply GROUP BY BOARD_KEY) C USING (BOARD_KEY)) x WHERE BOARD_TITLE LIKE ? OR BOARD_CONTENT LIKE ?) z  ORDER BY BOARD_DATE DESC limit ?, ?";
+				sql = "SELECT z.BOARD_KEY, z.USER_KEY, z.BOARD_TITLE, z.BOARD_DATE, z.BOARD_READCOUNT, ifnull(z.COMMENTCOUNT,0) REPLYCOUNT, ifnull(z.LIKECOUNT,0) LIKECOUNT, z.BOARD_CONTENT "
+						+ "FROM (SELECT x.* " + "FROM (SELECT * "
+						+ "FROM board LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT "
+						+ "FROM counts GROUP BY BOARD_KEY) D USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT "
+						+ "FROM reply GROUP BY BOARD_KEY) C USING (BOARD_KEY)) x WHERE BOARD_TITLE LIKE ? OR BOARD_CONTENT LIKE ?) z  ORDER BY BOARD_DATE DESC limit ?, ?";
 			} else if (field.equals("user_name")) {
-				sql = "SELECT z.BOARD_KEY, z.USER_KEY, z.USER_NAME, z.BOARD_TITLE, z.BOARD_DATE, z.BOARD_READCOUNT, ifnull(z.COMMENTCOUNT,0) REPLYCOUNT, ifnull(z.LIKECOUNT,0) LIKECOUNT, z.BOARD_CONTENT " + 
-						"FROM (SELECT * " + 
-						"FROM (SELECT * " + 
-						"FROM board LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT \n" + 
-						"FROM counts GROUP BY BOARD_KEY) D USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT " + 
-						"FROM reply GROUP BY BOARD_KEY) C USING (BOARD_KEY)) x LEFT JOIN (SELECT USER_KEY , USER_NAME " + 
-						"FROM users) B USING (USER_KEY)) z  WHERE z.USER_NAME like ?" + 
-						"ORDER BY BOARD_DATE DESC limit ?, ?";
+				sql = "SELECT z.BOARD_KEY, z.USER_KEY, z.USER_NAME, z.BOARD_TITLE, z.BOARD_DATE, z.BOARD_READCOUNT, ifnull(z.COMMENTCOUNT,0) REPLYCOUNT, ifnull(z.LIKECOUNT,0) LIKECOUNT, z.BOARD_CONTENT "
+						+ "FROM (SELECT * " + "FROM (SELECT * "
+						+ "FROM board LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT \n"
+						+ "FROM counts GROUP BY BOARD_KEY) D USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT "
+						+ "FROM reply GROUP BY BOARD_KEY) C USING (BOARD_KEY)) x LEFT JOIN (SELECT USER_KEY , USER_NAME "
+						+ "FROM users) B USING (USER_KEY)) z  WHERE z.USER_NAME like ?"
+						+ "ORDER BY BOARD_DATE DESC limit ?, ?";
 			} else {
-				sql = "SELECT z.BOARD_KEY, z.USER_KEY, z.BOARD_TITLE, z.BOARD_DATE, z.BOARD_READCOUNT, ifnull(z.COMMENTCOUNT,0) REPLYCOUNT, ifnull(z.LIKECOUNT,0) LIKECOUNT, z.BOARD_CONTENT " + 
-						"FROM (SELECT x.* " + 
-						"FROM (SELECT * " + 
-						"FROM board LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT " + 
-						"FROM counts GROUP BY BOARD_KEY) D USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT " + 
-						"FROM reply GROUP BY BOARD_KEY) C USING (BOARD_KEY)) x " + 
-						"WHERE " + field + "  like ? ) z ORDER BY BOARD_DATE DESC limit ?, ?";
+				sql = "SELECT z.BOARD_KEY, z.USER_KEY, z.BOARD_TITLE, z.BOARD_DATE, z.BOARD_READCOUNT, ifnull(z.COMMENTCOUNT,0) REPLYCOUNT, ifnull(z.LIKECOUNT,0) LIKECOUNT, z.BOARD_CONTENT "
+						+ "FROM (SELECT x.* " + "FROM (SELECT * "
+						+ "FROM board LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT "
+						+ "FROM counts GROUP BY BOARD_KEY) D USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT "
+						+ "FROM reply GROUP BY BOARD_KEY) C USING (BOARD_KEY)) x " + "WHERE " + field
+						+ "  like ? ) z ORDER BY BOARD_DATE DESC limit ?, ?";
 			}
 			int startrow = (page - 1) * limit;
 //         int endrow = startrow + limit - 1;
@@ -771,8 +777,9 @@ public class BoardDAO {
 		try {
 			conn = ds.getConnection();
 
-			String sql = "select * from board b left join (select count(board_key) counts ,board_key " + 
-					"from reportcount group by board_key) r using(board_key) where " + field + " like ? order by counts desc limit ?, ?";
+			String sql = "select * from board b left join (select count(board_key) counts ,board_key "
+					+ "from reportcount group by board_key) r using(board_key) where " + field
+					+ " like ? order by counts desc limit ?, ?";
 
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, "%" + value + "%");
@@ -891,12 +898,11 @@ public class BoardDAO {
 		List<BoardRankingBean> brl = new ArrayList<BoardRankingBean>();
 		try {
 			conn = ds.getConnection();
-			String sql = "SELECT z.BOARD_KEY, z.USER_KEY, z.BOARD_TITLE, z.BOARD_DATE, z.BOARD_READCOUNT, ifnull(z.COMMENTCOUNT,0) REPLYCOUNT, ifnull(z.LIKECOUNT,0) LIKECOUNT, z.BOARD_CONTENT " + 
-					"FROM (SELECT x.* " + 
-					"FROM (SELECT * " + 
-					"FROM board LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT " + 
-					"FROM counts GROUP BY BOARD_KEY) D USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT " + 
-					"FROM reply GROUP BY BOARD_KEY) C USING (BOARD_KEY)) x ) z ORDER BY LIKECOUNT DESC, BOARD_READCOUNT limit ?, ?";
+			String sql = "SELECT z.BOARD_KEY, z.USER_KEY, z.BOARD_TITLE, z.BOARD_DATE, z.BOARD_READCOUNT, ifnull(z.COMMENTCOUNT,0) REPLYCOUNT, ifnull(z.LIKECOUNT,0) LIKECOUNT, z.BOARD_CONTENT "
+					+ "FROM (SELECT x.* " + "FROM (SELECT * "
+					+ "FROM board LEFT JOIN (SELECT BOARD_KEY, COUNT(*) LIKECOUNT "
+					+ "FROM counts GROUP BY BOARD_KEY) D USING (BOARD_KEY) LEFT JOIN (SELECT BOARD_KEY, COUNT(*) COMMENTCOUNT "
+					+ "FROM reply GROUP BY BOARD_KEY) C USING (BOARD_KEY)) x ) z ORDER BY LIKECOUNT DESC, BOARD_READCOUNT limit ?, ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, start);
 			pstmt.setInt(2, end);
@@ -912,7 +918,7 @@ public class BoardDAO {
 			}
 		} catch (Exception ex) {
 			System.out.println("getDetail() 에러 : " + ex);
-			ex.printStackTrace(); 
+			ex.printStackTrace();
 		} finally {
 			close();
 		}

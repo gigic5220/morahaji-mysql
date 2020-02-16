@@ -129,7 +129,7 @@ public class ReplyDAO {
 		int result = 0;
 		try {
 			conn = ds.getConnection();
-			String sql = "insert into reply values((select ifnull(max(reply_key),0)+1 from reply ALIAS_FOR_SUBQUERY), ?, ?, ?, now(), (select ifnull(max(reply_key),0)+1 from reply), 0, 0)";
+			String sql = "insert into reply values((select ifnull(max(reply_key),0)+1 from reply ALIAS_FOR_SUBQUERY), ?, ?, ?, now(), (select ifnull(max(reply_key),0)+1 from reply ALIAS_FOR_SUBQUERY), 0, 0)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, rp.getUSER_KEY());
 			pstmt.setInt(2, rp.getBOARD_KEY());

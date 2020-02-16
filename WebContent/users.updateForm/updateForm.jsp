@@ -313,6 +313,10 @@
    
    //프로필 이미지 변경하기
     function reviewUploadImg(fileObj){
+	   if($('#upfile')[0].files[0].size >= (5*1024*1024)){
+		   alert("이미지 크기를 확인헤주세요😓");
+		   return false;
+	   }
       $('#photoChange').submit();
    } 
 </script>

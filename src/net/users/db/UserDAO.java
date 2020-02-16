@@ -25,7 +25,7 @@ public class UserDAO {
 		try {
 			Context init = new InitialContext();
 			ds = (DataSource) init.lookup("java:comp/env/jdbc/joyrapture");
-//			ds = (DataSource) init.lookup("java:comp/env/jdbc_mariadb");
+			//ds = (DataSource) init.lookup("java:comp/env/jdbc_mariadb");
 		} catch (Exception ex) {
 			System.err.println("UserDAO DB 연결 실패 : " + ex);
 		}
