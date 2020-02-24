@@ -2,7 +2,7 @@
 * MORAHAJI
 * 11/06/2019 ~ 12/13/2019
 
-![main](./image/main.JPG)
+![main](./image/freeboard.JPG)
 ----
 **개발 목표**
 
